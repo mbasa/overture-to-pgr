@@ -52,7 +52,7 @@ DECLARE
 BEGIN
     -- Geography length is in meters
     length_meters := ST_Length(geom::geography);
-RAISE NOTICE 'length_meters: %',length_meters;
+
     -- Convert km/hour into meters/second
     meters_per_second := speed_kmph * 1000.0 / 3600.0;
 
