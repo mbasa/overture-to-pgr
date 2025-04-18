@@ -1,4 +1,5 @@
  # Overture Data to pgRouting Topology Creation
+![routing using Overture data](routing.png)
 
  This `PL/pgSQL` script will convert the Overture segment data set into a routing topology table suitable for pgRouting and pgrServer usage.
 
