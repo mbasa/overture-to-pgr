@@ -225,9 +225,9 @@ BEGIN
     DROP SEQUENCE IF EXISTS pgr_segment_seq;
     CREATE SEQUENCE pgr_segment_seq;
 
-    RAISE NOTICE 'Creating pgr_edges...';
-    DROP TABLE IF EXISTS pgr_edges;
-    CREATE TABLE pgr_edges AS
+    RAISE NOTICE 'Creating overture_pgr...';
+    DROP TABLE IF EXISTS overture_pgr;
+    CREATE TABLE overture_pgr AS
     SELECT 
         -- Assign a bigint unique id to the edge
         nextval('pgr_segment_seq') AS edge_id, 
@@ -240,7 +240,7 @@ BEGIN
         pgr_segment_cost(seg.geometry, seg.speed_kmph) AS cost,
 
         -- Infinite cost when trying to travel a one-way street backwards
-        CASE WHEN one_way THEN -1 ELSE pgr_segment_cost(seg.geometry, seg.speed_kmph) END AS reverse_cost,
+        CASE WHEN one_way THEN 1000000 ELSE pgr_segment_cost(seg.geometry, seg.speed_kmph) END AS reverse_cost,
 
         -- Will need the edge geometry to construct the spatial path
         -- from the route edge sequence
@@ -267,8 +267,15 @@ BEGIN
     GET DIAGNOSTICS nrows = ROW_COUNT;
     RAISE NOTICE '  % rows created', nrows;
 
-    CREATE INDEX pgr_edges_geom_x ON pgr_edges USING GIST (geometry);
-    CREATE INDEX pgr_edges_id_x ON pgr_edges (edge_id);
+    CREATE INDEX pgr_edges_geom_x ON overture_pgr USING GIST (geometry);
+    CREATE INDEX pgr_edges_id_x ON overture_pgr (edge_id);
+
+    --
+    -- Removing temporary tables
+    --
+    RAISE NOTICE 'Cleaning up...';
+    DROP TABLE pgr_segments;
+    DROP TABLE pgr_connectors;
 
     RAISE NOTICE 'Done.';
     RETURN true;
